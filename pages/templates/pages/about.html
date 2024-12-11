@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+	TVN | About Ceaser Cypher
+{% endblock %}
+
+{% block css %}
+	<link href="{% static 'pages/css/about.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+ <div class="container">
+        <div class="hero-section">
+            <h1>Understanding the Caesar Cipher</h1>
+            <p>The Caesar Cipher is one of the simplest and most widely known encryption techniques used to protect messages. Let's explore how it works!</p>
+        </div>
+
+        <div class="cipher-explanation">
+            <h2>What is the Caesar Cipher?</h2>
+            <p>
+                The Caesar Cipher is a substitution cipher, where each letter of the plaintext is replaced by a letter some fixed number of positions down or up the alphabet. It is named after Julius Caesar, who is believed to have used this method to secure his private messages.
+            </p>
+
+            <h3>How it works:</h3>
+            <p>
+                For example, if you apply a Caesar Cipher with a shift of 3, the letter 'A' would become 'D', 'B' would become 'E', and so on. To decrypt the message, you simply reverse the process by shifting the letters in the opposite direction.
+            </p>
+
+            <img src="{% static 'ceaser_cipher.webp' %}" alt="Caesar Cipher Example" class="img-fluid cipher-image">
+
+
+            <h3>Example:</h3>
+            <p><strong>Plain Text:</strong> HELLO</p>
+            <p><strong>With a shift of 3:</strong> KHOOR</p>
+
+
+            <h3>Why it's called the Caesar Cipher:</h3>
+            <img src="{% static 'hero.png' %}" alt="Caesar Cipher Example" class="img-fluid cipher-image">
+            <p>
+                It is named after Julius Caesar, who used this cipher to protect his military communications. He would shift the letters of his messages by a certain number, making it difficult for enemies to understand.
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="home">
+        <div class="comment-box">
+            <div>
+                <p>Welcome To Caesar Cipher</p>
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="800px" width="800px"
+                     version="1.1" id="Layer_1" viewBox="0 0 512 512" xml:space="preserve">
+                    <path d="M0,382.456h269.248l127.728,103.76v-103.76H512V25.784H0V382.456z M32,57.784h448v292.672H364.992  V419l-84.352-68.544H32V57.784z"/>
+                </svg>
+            </div>
+        </div>
+
+        <video src="{% static 'home.mp4' %}" autoplay loop muted playsinline></video>
+
+        <a class="cta-start-game" href="{% url 'game_start' %}">Game Start</a>
+    </section>
+{% endblock %}

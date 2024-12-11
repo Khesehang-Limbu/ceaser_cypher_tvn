@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="game">
+        <div class="container py-5">
+            <h1 class="text-center mb-4">Welcome To The Caesar Cipher!! ☺️☺️</h1>
+
+            <!-- Cipher Form -->
+            <form id="cipherForm" class="shadow-lg p-4 rounded">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="cipher_form"/>
+                <input type="hidden" id="hiddenText" name="text_to_cipher"/>
+
+                <div class="mb-3">
+                    <label for="textToCipher" class="form-label">Enter Text to Cipher:</label>
+                    <textarea
+                            class="form-control"
+                            id="textToCipher"
+                            rows="4"
+                            placeholder="Type your text here..."
+                            required
+                    ></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cipherKey" class="form-label">Enter Cipher Key (Number):</label>
+                    <input
+                            type="number"
+                            class="form-control"
+                            id="cipherKey"
+                            name="cipher_key"
+                            placeholder="Enter a numeric key"
+                            required
+                    >
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Cipher Text</button>
+                </div>
+            </form>
+
+            <!-- Guess Form -->
+            <form id="guessForm" name="guessForm" class="shadow-lg p-4 rounded mt-4">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="guess_form"/>
+
+                <div class="mb-3">
+                    <label for="guess" class="form-label">Enter Your Guess:</label>
+                    <textarea
+                            class="form-control"
+                            id="guess"
+                            name="guess"
+                            rows="4"
+                            placeholder="Type your guess here..."
+                            required
+                    ></textarea>
+                </div>
+
+                <input type="hidden" name="shift" value=""/>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Guess</button>
+                </div>
+            </form>
+
+            <!-- Result Section -->
+            <div id="result" class="text-center my-5">
+                <h2 class="mb-4"></h2>
+                <img src="" class="img-fluid" alt="congrats"/>
+            </div>
+
+            <!-- Play Again Button -->
+            <div class="text-center">
+                <button type="button" id="play_again" class="btn btn-success btn-lg shadow-lg">Play Again</button>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        const form = document.getElementById("cipherForm");
+        const guess_form = document.getElementById("guessForm");
+        const result = document.querySelector("#result");
+        const play_again = document.querySelector("#play_again");
+
+        play_again.style.display = "none";
+        result.style.display = "none";
+        guess_form.style.display = "none";
+
+        const textArea = document.getElementById('textToCipher');
+        const hiddenInput = document.getElementById('hiddenText');
+
+        let originalText = "";
+        textArea.addEventListener('input', function (event) {
+            const newChar = event.data || "";
+            if (newChar === null && originalText.length > 0) {
+                originalText = originalText.slice(0, -1);
+            } else {
+                originalText += newChar;
+            }
+
+            hiddenInput.value = originalText;
+
+            textArea.value = '*'.repeat(originalText.length);
+        });
+
+
+        let encoded_response, decoded_response;
+
+        form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const csrfToken = formData.get('csrfmiddlewaretoken');
+
+            try {
+                const response = await fetch("{% url 'game_start' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    encoded_response = await response.json();
+                } else {
+                    alert("Error: Unable to process the request.");
+                }
+            } catch (error) {
+                console.error("Error: ", error);
+                alert("An error occurred. Please try again later.");
+            }
+
+            form.style.display = "none";
+            guess_form.style.display = "block";
+        });
+
+        guess_form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            let shift = document.querySelector("[name=shift]");
+            shift.value = encoded_response.shift;
+
+            const formData = new FormData(guess_form);
+            const csrfToken = formData.get('csrfmiddlewaretoken');
+
+            try {
+                const response = await fetch("{% url 'game_start' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    decoded_response = await response.json();
+
+                    if (decoded_response.deciphered_text === encoded_response.text) {
+                        const h2 = result.querySelector("h2");
+                        h2.innerHTML = "Congratulations!!";
+
+                        const img = result.querySelector("img");
+                        img.setAttribute("src", "{% static 'congratulations.gif' %}");
+                        result.classList.add("d-flex");
+                        result.style.display = "block";
+
+                        result.classList.add("d-flex");
+                        result.style.display = "block";
+
+                        play_again.style.display = "block";
+
+                    } else {
+                        const h2 = result.querySelector("h2");
+                        h2.innerHTML = "Alas, You Didn't Get It Correct, Try Again..😥😥😥";
+
+                        const img = result.querySelector("img");
+                        img.setAttribute("src", "{% static 'sad.webp' %}");
+                        result.classList.add("d-flex");
+                        result.style.display = "block";
+                    }
+
+                } else {
+                    alert("Error: Unable to process the request.");
+                }
+            } catch (error) {
+                console.error("Error: ", error);
+                alert("An error occurred. Please try again later.");
+            }
+        });
+
+        play_again.addEventListener("click", function (e) {
+            window.location.reload();
+        });
+    </script>
+{% endblock %}
+
