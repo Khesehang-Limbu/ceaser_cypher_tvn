@@ -45,6 +45,16 @@
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="guess_form"/>
 
+                <div class="mb-3" id="cipheredDiv">
+                    <label for="textToCipher" class="form-label">Ciphered Text:</label>
+                    <textarea
+                            class="form-control"
+                            id="cipheredText"
+                            rows="4"
+                            placeholder=""
+                    ></textarea>
+                </div>
+
                 <div class="mb-3">
                     <label for="guess" class="form-label">Enter Your Guess:</label>
                     <textarea
@@ -83,7 +93,10 @@
         const guess_form = document.getElementById("guessForm");
         const result = document.querySelector("#result");
         const play_again = document.querySelector("#play_again");
+        const cipheredDiv = document.querySelector("#cipheredDiv");
+        const cipheredText = document.querySelector("#cipheredText");
 
+        cipheredDiv.style.display = "none";
         play_again.style.display = "none";
         result.style.display = "none";
         guess_form.style.display = "none";
@@ -125,6 +138,9 @@
 
                 if (response.ok) {
                     encoded_response = await response.json();
+                    console.log(encoded_response);
+                    cipheredText.value = encoded_response.ciphered_text;
+                    cipheredDiv.style.display = "block";
                 } else {
                     alert("Error: Unable to process the request.");
                 }
